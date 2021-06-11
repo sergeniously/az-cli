@@ -1,0 +1,7 @@
+
+file(GLOB HEADERS "*.h")
+
+install(
+    FILES ${HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+)
