@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(az-cli
-    DESCRIPTION "AnoZer Command Line Interpreter library"
+    DESCRIPTION "Another Command Line Interpreter library"
     VERSION 1.0
     LANGUAGES CXX
 )
