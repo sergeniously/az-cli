@@ -106,10 +106,6 @@ public:
 	Argument& with_action(const Action::Easy&);
 	Argument& with_action(const Action::Full&);
 
-	// Set callbacks to input values by @input and handle errors by @blame
-	Argument& interactive(const Interactor&);
-	Argument& interactive(const Interactor::Input& input = {}, const Interactor::Blame& blame = {});
-
 	// Get the argument id
 	int id() const;
 
@@ -141,8 +137,6 @@ public:
 	bool isUnique() const;
 	// Check if the argument is hidden
 	bool isHidden() const;
-	// Check if the argument is interactive (able to get value via callback)
-	bool isInteractive() const;
 	// Check if the argument has a value and should be stored to the @Context
 	bool isValuable() const;
 
@@ -161,7 +155,7 @@ public:
 	Value getCertainValue() const;
 	// Provide the @Context with input or default value
 	// Throws Error::Code::RequireArgument if the argument is required but not presented in @Context
-	void provideValue(Context&) const;
+	void provideValue(const Interactor&, Context&) const;
 
 	// Parse the argument using @Cursor for access to [argv, argc]
 	//  and fill @Context with parsed values
@@ -176,8 +170,8 @@ public:
 	// Perform an action of the argument
 	int perform(const Context&) const;
 
-	// Input the argument value via Interactor
-	bool input(Value&) const;
+	// Input the argument @Value via @Interactor
+	bool input(const Interactor&, Value&) const;
 
 private:
 	bool validate(const char* arg, Value&) const;
@@ -190,7 +184,6 @@ private:
 	};
 	std::map<Attribute,Value> attributes;
 	std::shared_ptr<Validator> validator;
-	Interactor interactor;
 	Action action;
 };
 
@@ -200,7 +193,5 @@ using Arg = Argument;
 // Allow to avoid creating and storing unnecessary arguments groups, that'll never be used during parsing
 // TODO: add @Context for ability to describe arguments depending on the context
 using Usage = std::function<std::list<Argument>(const Argument&)>;
-
-std::string input(const Argument&);
 
 }

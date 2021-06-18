@@ -8,17 +8,6 @@
 namespace az::cli
 {
 
-std::string input(const Argument& argument)
-{
-	std::string line;
-	std::cout << argument.getDescription() << argument.getValidation() << ": ";
-	std::getline(std::cin, line);
-	if (std::cin.eof() || std::cin.bad()) {
-		line.clear();
-	}
-	return line;
-}
-
 Argument::Argument(int id, const std::list<std::string>& keys, const std::string& description)
 {
 	attributes[Attribute::ID] = id;
@@ -66,18 +55,6 @@ Argument& Argument::with_action(const Action::Easy& act)
 Argument& Argument::with_action(const Action::Full& act)
 {
 	this->action = Action(act);
-	return *this;
-}
-
-Argument& Argument::interactive(const Interactor& interactor)
-{
-	return interactive(interactor.input, interactor.blame);
-}
-
-Argument& Argument::interactive(const Interactor::Input& input, const Interactor::Blame& blame)
-{
-	interactor.input = input ? input : cli::input;
-	interactor.blame = blame ? blame : [](const Error& error){ printf("Error: %s. Try again!\n", error.what()); };
 	return *this;
 }
 
@@ -156,11 +133,6 @@ bool Argument::isHidden() const
 bool Argument::hasAction() const
 {
 	return action;
-}
-
-bool Argument::isInteractive() const
-{
-	return interactor;
 }
 
 bool Argument::isValuable() const
@@ -314,16 +286,12 @@ bool Argument::validate(const char* arg, Value& value) const
 	return true;
 }
 
-bool Argument::input(Value& value) const
+bool Argument::input(const Interactor& interactor, Value& value) const
 {
-	while (interactor) {
+	while (interactor && !isHidden()) {
 		// TODO: input multiply if argument is multiple
 		auto line = interactor.input(*this);
 		if (line.empty()) {
-			if (hasDefaultValue()) {
-				value = getValidatedDefaultValue();
-				return true;
-			}
 			break;
 		}
 		try {
@@ -341,6 +309,9 @@ bool Argument::input(Value& value) const
 const char* Argument::match(const char* arg) const
 {
 	if (attributes.count(Attribute::KEYS)) {
+		// TODO: assuming a key may have an assignment character
+		// firstly compare a whole key with an argument string
+		// then check if an assignment is at key-size position
 		auto assignment_pos = strchr(arg, '=');
 		std::string key = assignment_pos ? std::string(arg, assignment_pos - arg) : std::string(arg);
 		if (attributes.at(Attribute::KEYS).contains(key)) {
@@ -382,13 +353,13 @@ bool Argument::parse(Cursor& cursor, Context& context) const
 	return true;
 }
 
-void Argument::provideValue(Context& context) const
+void Argument::provideValue(const Interactor& interactor, Context& context) const
 {
 	if (!isValuable() || context.has(id())) {
 		return;
 	}
 	Value value;
-	if (isInteractive() && input(value)) {
+	if (needValue() && input(interactor, value)) {
 		store(value, context);
 		return;
 	}

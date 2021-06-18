@@ -33,8 +33,6 @@ enum Arg {
 
 // Callback for active argument
 extern az::cli::Argument::Action action;
-// Interactor for interactive argument
-extern az::cli::Argument::Interactor interactor;
 
 // This function describes all arguments of the application according to their hierarchy
 std::list<az::cli::Arg> usage(const az::cli::Arg& arg);

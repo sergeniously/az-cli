@@ -34,12 +34,4 @@ BOOST_AUTO_TEST_CASE(make_with_default_value)
 	BOOST_CHECK_EQUAL(arg.getDefaultValue().asString(), "foo");
 }
 
-BOOST_AUTO_TEST_CASE(make_interactive)
-{
-	auto arg = az::cli::Argument().interactive([](const az::cli::Argument& arg){ return "answer"; }).with_value();
-	az::cli::Value value;
-	BOOST_CHECK(arg.input(value));
-	BOOST_CHECK_EQUAL(value.asString(), "answer");
-}
-
 BOOST_AUTO_TEST_SUITE_END()

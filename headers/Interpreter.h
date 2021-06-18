@@ -17,7 +17,7 @@ public:
 	};
 
 	// Construct and provide the interpreter by arguments vector and parsing options
-	Interpreter(const char** argv, int argc, const Options& options = {});
+	Interpreter(const char** argv, int argc, const Options& = {});
 
 	// Sets options.do_everything = true
 	Interpreter& doEverything(bool = true);
@@ -29,6 +29,10 @@ public:
 	// Should be called before performing Interpreter::run
 	Interpreter& withNeedHelpString(const char*);
 
+	// Sets callbacks to input values by @input and handle errors by @blame
+	Interpreter& interactively(const Argument::Interactor&);
+	Interpreter& interactively(const Argument::Interactor::Input& = {}, const Argument::Interactor::Blame& = {});
+
 	// Parse arguments starting from @Argument and using @Usage to get arguments descriptions
 	// Fill @Context with parsed arguments values and perform parsed arguments with actions
 	int run(const Argument&, const Usage&);
@@ -36,7 +40,7 @@ public:
 
 	// Print arguments starting from @Argument and using @Usage to get arguments descriptions
 	// It actually uses Printer class with default options
-	static int print(const Argument&, const Usage&, std::ostream& stream = std::cout);
+	static int print(const Argument&, const Usage&, std::ostream& = std::cout);
 
 private:
 	// Perform parsing of all arguments in command line
@@ -44,11 +48,16 @@ private:
 	// Acknowledge the existence of @arg among discovered arguments
 	bool recognize(const char* arg) const;
 
+	static std::string input(const Argument&);
+	static void blame(const Error&);
+
 private:
 	// arguments vector cursor
 	Cursor cursor;
 	// parsing options
 	Options options;
+	// interactor for interactive mode
+	Argument::Interactor interactor;
 	// parsed arguments with action
 	std::list<Argument> actions;
 	// discovered argument groups

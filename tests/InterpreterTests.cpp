@@ -9,7 +9,6 @@ struct AppFixture
 	AppFixture()
 		: app(test::Arg::APP, {"app"}, "Application argument")
 	{
-		test::interactor.input = [](const az::cli::Argument&){ return ""; };
 		test::action.full_act = [this](const az::cli::Argument& arg, const az::cli::Context& ctx) {
 			context = ctx;
 			return arg.id();
@@ -194,9 +193,14 @@ BOOST_FIXTURE_TEST_CASE(interact, AppFixture)
 	std::vector<const char*> argv = {
 		"app", "call", "-i", "1"
 	};
-	test::interactor.input = [](const az::cli::Argument&){ return "interactive"; };
+	auto input = [](const az::cli::Arg& arg) {
+		if (arg.id() == test::Arg::STRING) {
+			return "interactive";
+		}
+		return "";
+	};
 
-	BOOST_REQUIRE_NO_THROW(interpret(argv.data(), argv.size()));
+	BOOST_REQUIRE_NO_THROW(az::cli::Interpreter(argv.data(), argv.size()).interactively(input).run(app, test::usage));
 	BOOST_CHECK(context.has(test::Arg::STRING));
 	BOOST_CHECK_EQUAL(std::string(context[test::Arg::STRING]), "interactive");
 }

@@ -4,7 +4,6 @@ namespace test
 {
 
 az::cli::Argument::Action action;
-az::cli::Argument::Interactor interactor;
 
 std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
 {
@@ -13,8 +12,8 @@ std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
 			// list arguments of the root of the application
 			return {
 				az::cli::Arg(Arg::FLAG, {"-f", "--flag"}, "Argument without value").with_no_value(),
-				az::cli::Arg(Arg::HELP, {"-h", "--help", "help"}, "Print this usage").with_action([&]{ 
-					return az::cli::Interpreter::print(arg, usage); 
+				az::cli::Arg(Arg::HELP, {"-h", "--help", "help"}, "Print this usage").with_action([&]{
+					return az::cli::Interpreter::print(arg, usage);
 				}),
 				az::cli::Arg(Arg::CALL, {"--call", "call"}, "Active argument").with_action(action)
 			};
@@ -28,7 +27,7 @@ std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
 				az::cli::Arg(Arg::REAL, {"-r", "--real"}, "Real argument")
 					.with_value(az::cli::evaluate().real().min(-30).max(30)).by_default(1.23),
 				az::cli::Arg(Arg::STRING, {"-s", "--string"}, "String argument")
-					.interactive(interactor).with_value(az::cli::evaluate().string().min(1).max(16)).by_default("str"),
+					.with_value(az::cli::evaluate().string().min(1).max(16)).by_default("str"),
 				az::cli::Arg(Arg::ARRAY, {"-a", "--array"}, "Array argument")
 					.multiple().unique().with_value(az::cli::evaluate().nonempty()),
 				az::cli::Arg(Arg::PAIR, {"-p", "--pair"}, "Paired argument")

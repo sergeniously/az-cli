@@ -25,11 +25,11 @@ int main(int argc, const char** argv)
 	// Describe the main application argument to start interpretation from
 	az::cli::Arg application(demo::Arg::APP, {"az-cli-demo"}, 
 		"The demo application for the az-cli library\n"
-		"© Sergeniously, 2021. All rights reserved\n");
+		"(C) Sergeniously, 2021. All rights reserved\n");
 
 	try {
 		// parse arguments and invoke callbacks
-		return az::cli::Interpreter(argv, argc).run(application, demo::usage);
+		return az::cli::Interpreter(argv, argc).interactively().run(application, demo::usage);
 	}
 	catch (const az::cli::Error& error) {
 		// if something went wrong, see what was mistaken

@@ -29,6 +29,18 @@ Interpreter& Interpreter::withNeedHelpString(const char* string)
 	return *this;
 }
 
+Interpreter& Interpreter::interactively(const Argument::Interactor& interactor)
+{
+	return interactively(interactor.input, interactor.blame);
+}
+
+Interpreter& Interpreter::interactively(const Argument::Interactor::Input& input, const Argument::Interactor::Blame& blame)
+{
+	interactor.input = input ? input : this->input;
+	interactor.blame = blame ? blame : this->blame;
+	return *this;
+}
+
 int Interpreter::print(const Argument& argument, const Usage& usage, std::ostream& stream)
 {
 	return Printer(stream).recursively().print(argument, usage);
@@ -69,7 +81,7 @@ bool Interpreter::parse(const Argument& argument, const Usage& usage, Context& c
 	}
 	// provide @context with input or default values of sub arguments
 	for (const auto& sub_argument : argumentation.back()) {
-		sub_argument.provideValue(context);
+		sub_argument.provideValue(interactor, context);
 	}
 	// current (last) argument group is not needed anymore for previous recursive call
 	// so it should be dropped; thus the @argumentation is gonna be clean in the end
@@ -113,6 +125,22 @@ int Interpreter::run(const Argument& app, const Usage& usage)
 {
 	Context context;
 	return run(app, usage, context);
+}
+
+std::string Interpreter::input(const Argument& argument)
+{
+	std::string line;
+	std::cout << argument.getDescription() << argument.getValidation() << ": ";
+	std::getline(std::cin, line);
+	if (std::cin.eof() || std::cin.bad()) {
+		line.clear();
+	}
+	return line;
+}
+
+void Interpreter::blame(const Error& error)
+{
+	printf("Error: %s. Try again!\n", error.what());
 }
 
 }

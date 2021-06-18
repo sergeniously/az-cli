@@ -24,8 +24,6 @@ enum Arg {
 
 // Callback for active argument (for testing)
 static std::function<int(const az::cli::Arg&,const az::cli::Context&)> callback;
-// Interactor for interactive argument (for testing)
-static az::cli::Argument::Interactor interactor;
 
 // This function describes all arguments of the application according to their hierarchy
 std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
@@ -48,7 +46,7 @@ std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
 				az::cli::Arg(Arg::REAL, {"-r", "--real"}, "Real argument")
 					.with_value(az::cli::Validator().real().min(-30).max(30)).by_default(1.23),
 				az::cli::Arg(Arg::STRING, {"-s", "--string"}, "String argument")
-					.interactive(interactor).with_value(az::cli::Validator().string().min(1).max(16)).by_default("str"),
+					.with_value(az::cli::Validator().string().min(1).max(16)).by_default("str"),
 				az::cli::Arg(Arg::ARRAY, {"-a", "--array"}, "Array argument")
 					.multiple().unique().with_value(az::cli::Validator().nonempty()),
 				az::cli::Arg(Arg::PAIR, {"-p", "--pair"}, "Paired argument")
