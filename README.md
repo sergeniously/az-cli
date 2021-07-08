@@ -39,44 +39,44 @@ After that define the usage function which returns lists of arguments according 
 ```c++
 std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
 {
-	switch (arg.id()) {
-		case Arg::APP:
-			return {
-				az::cli::Arg(Arg::HELP, {"-h", "--help", "help"}, "Print this usage").with_action([&]{
-                    return az::cli::Interpreter::print(arg, usage); 
+    switch (arg.id()) {
+        case Arg::APP:
+            return {
+                az::cli::Arg(Arg::HELP, {"-h", "--help", "help"}, "Print this usage").with_action([&]{
+                    return az::cli::Interpreter::print(arg, usage);
                 }),
-				az::cli::Arg(Arg::ACTION, {"action", "--action", "-a"}, "Perform action").with_action(action),
-				az::cli::Arg(Arg::VERBOSE, {"-v", "--verbose"}, "Provide detailed output").with_no_value(),
-			};
-		case Arg::ACTION:
-			return {
-				az::cli::Arg(Arg::OPTION, {"-o", "--option"}, "Option of action")
-					.with_value(az::cli::Validator().string("VALUE").min(1).max(16)).by_default("value")
-			};
-		default:
-			return {};
-	}
+                az::cli::Arg(Arg::ACTION, {"action", "--action", "-a"}, "Perform action").with_action(action),
+                az::cli::Arg(Arg::VERBOSE, {"-v", "--verbose"}, "Provide detailed output").with_no_value(),
+            };
+        case Arg::ACTION:
+            return {
+                az::cli::Arg(Arg::OPTION, {"-o", "--option"}, "Option of action")
+                .with_value(az::cli::Validator().string("VALUE").min(1).max(16)).by_default("value")
+            };
+        default:
+            return {};
+    }
 }
 ```
 Finally, inside the **main** function define a root argument with a description of the application and then do interpretation based on the usage function:
 ```c++
 int main(int argc, const char** argv)
 {
-	az::cli::Arg app(Arg::APP, {"az-cli"}, 
-		"Another command line interpreter C++ library\n"
-		"(C) Sergeniously, 2021. All rights reserved\n");
+    az::cli::Arg app(Arg::APP, {"az-cli"},
+        "Another command line interpreter C++ library\n"
+        "(C) Sergeniously, 2021. All rights reserved\n");
 
-	try {
-		return az::cli::Interpreter(argv, argc).run(app, usage);
-	}
-	catch (const az::cli::Error& error) {
-		if (error.code() == az::cli::Error::Code::NeedHelp) {
-			std::cout << error.help() << std::endl;
-		} else {
+    try {
+        return az::cli::Interpreter(argv, argc).run(app, usage);
+    }
+    catch (const az::cli::Error& error) {
+        if (error.code() == az::cli::Error::Code::NeedHelp) {
+            std::cout << error.help() << std::endl;
+        } else {
             std::cout << "Error: " << error.what() << std::endl;
-		}
-	}
-	return -1;
+        }
+    }
+    return -1;
 }
 ```
 Now, after building, it is ready to be used in following ways:
