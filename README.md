@@ -25,9 +25,9 @@ enum Arg {
     VERBOSE
 }
 ```
-Also, define some function to perfome some action:
+Also, define some function to perform some action:
 ```c++
-int action(const az::cli::Argument& arg, az::cli::Context& ctx)
+int action(const az::cli::Argument& arg, const az::cli::Context& ctx)
 {
     std::cout << "Hello, World!" << std::endl;
     if (ctx.has(Arg::VERBOSE)) {
