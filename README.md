@@ -42,16 +42,18 @@ std::list<az::cli::Arg> usage(const az::cli::Arg& arg)
     switch (arg.id()) {
         case Arg::APP:
             return {
-                az::cli::Arg(Arg::HELP, {"-h", "--help", "help"}, "Print this usage").with_action([&]{
-                    return az::cli::Interpreter::print(arg, usage);
-                }),
-                az::cli::Arg(Arg::ACTION, {"action", "--action", "-a"}, "Perform action").with_action(action),
-                az::cli::Arg(Arg::VERBOSE, {"-v", "--verbose"}, "Provide detailed output").with_no_value(),
+                az::cli::Arg(Arg::HELP, {"-h", "--help", "help"}, "Print this usage")
+                    .with_action([&]{ return az::cli::Interpreter::print(arg, usage); }),
+                az::cli::Arg(Arg::ACTION, {"action", "--action", "-a"}, "Perform action")
+                    .with_action(action),
+                az::cli::Arg(Arg::VERBOSE, {"-v", "--verbose"}, "Provide detailed output")
+                    .with_no_value(),
             };
         case Arg::ACTION:
             return {
                 az::cli::Arg(Arg::OPTION, {"-o", "--option"}, "Option of action")
-                .with_value(az::cli::Validator().string("VALUE").min(1).max(16)).by_default("value")
+                    .with_value(az::cli::Validator().string("VALUE").min(1).max(16))
+                    .by_default("value")
             };
         default:
             return {};
